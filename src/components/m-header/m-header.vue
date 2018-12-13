@@ -1,3 +1,6 @@
+// APP顶部组件
+
+
 <template>
   <div class="m-header">
     <h1 class="text">JUN</h1>

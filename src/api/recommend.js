@@ -38,3 +38,24 @@ export function getDiskList() {
       return Promise.resolve(res.data)
     })
 }
+
+// 获取歌单详情
+export function getSongList(disstid) {
+  var url = '/api/getCdInfo'
+  const data = Object.assign({}, commonParams, {
+    disstid,
+    type: 1,
+    json: 1,
+    utf8: 1,
+    onlysong: 0,
+    platform: 'yqq',
+    hostUin: 0,
+    needNewCode: 0
+  });
+
+  return axios.get(url, {
+    params: data
+  }).then((res) => {
+    return Promise.resolve(res.data);
+  });
+}

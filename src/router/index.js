@@ -6,6 +6,8 @@ import Rank from 'cpnts/rank/rank'
 import Singer from 'cpnts/singer/singer'
 import Search from 'cpnts/search/search'
 import SingerDetail from 'cpnts/singer-detail/singer-detail'
+import Disc from 'cpnts/disc/disc'
+import TopList from 'cpnts/top-list/top-list'
 
 Vue.use(Router)
 
@@ -16,7 +18,11 @@ export default new Router({
     },
     {
       path: '/recommend',
-      component: Recommend
+      component: Recommend,
+      children: [{
+        path: ':id',
+        component:Disc
+      }]
     },
     {
       path: '/singer',
@@ -28,11 +34,21 @@ export default new Router({
     },
     {
       path: '/rank',
-      component: Rank
+      component: Rank,
+      children:[{
+        path:':id',
+        component:TopList
+      }]
     },
     {
       path: '/search',
-      component: Search
+      component: Search,
+      children: [
+        {
+          path: ':id',
+          component: SingerDetail
+        }
+      ]
     }
   ]
 })

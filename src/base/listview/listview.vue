@@ -99,6 +99,10 @@ export default {
         scroll(pos) {
             this.scrollY = pos.y
         },
+        //刷新
+        refresh(){
+          this.$refs.listview.refresh()
+        },
         //滚动到element
         _scrollTo(index) {
             if (!index) {
@@ -110,7 +114,7 @@ export default {
                 index = this.listHeight.length - 2;
             }
             this.scrollY = -this.listHeight[index];
-            this.$refs.listview._scrollToElement(
+            this.$refs.listview.scrollToElement(
                 this.$refs.listGroup[index],
                 0
             ); //滚动到现在的index

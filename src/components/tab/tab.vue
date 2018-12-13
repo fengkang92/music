@@ -1,3 +1,6 @@
+// 首页TAB切换组件
+
+
 <template>
     <div class="tab">
         <router-link tag="div" class="tab-item" to="/recommend">
