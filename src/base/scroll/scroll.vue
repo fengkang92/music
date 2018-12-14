@@ -42,6 +42,7 @@ export default {
         type: null,
         default: false
       },
+      //开始滚动之前，用来判断滚动时是否需要收起键盘
       beforeScrollStart: {
         type: null,
         default: false

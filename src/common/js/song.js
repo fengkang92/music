@@ -19,8 +19,6 @@ export default class Song{
     if(this.lyric){
       return Promise.resolve(this.lyric)
     }
-
-
     return new Promise((resolve,reject)=>{
       getLyric(this.mid).then((res)=>{
         if(res.retcode===ERR_OK){
@@ -34,21 +32,6 @@ export default class Song{
 
   }
 }
-
-
-
-// export function creatSong(musicData){
-//   return new Song({
-//     id:musicData.songid,
-//     mid:musicData.songmid,
-//     singer:filtersSinger(musicData.singer),
-//     name:musicData.songname,
-//     album:musicData.albumname,
-//     duration:musicData.interval,
-//     image:`https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid}.jpg?max_age=2592000`,
-//     url:` http://220.181.91.152/amobile.music.tc.qq.com/C400${musicData.strMediaMid}.m4a?vkey=${musicData.strMediaMid}&guid=1819638027&uid=0&formtag=66`
-//   })
-// }
 
 export function creatSong(musicData) {
   return new Song({

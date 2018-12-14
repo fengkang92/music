@@ -2,7 +2,15 @@
 
 
 <template>
-  <scroll class="suggest" ref="suggest" @pullMoreLoad="searchMore" :pullMoreLoad="pullUp" :data="result">
+  <scroll
+    class="suggest"
+    ref="suggest"
+    :beforeScrollStart="beforeScroll"
+    @beforeScroll="listScroll"
+    :pullMoreLoad="pullUp"
+    @pullMoreLoad="searchMore"
+    :data="result"
+  >
     <div class="suggest-list-wrap">
       <ul class="suggest-list">
         <li @click="selectItem(item)" class="suggest-item" v-for="item in result">
@@ -27,11 +35,11 @@ import { search } from "api/search";
 import { ERR_OK } from "api/config";
 import { creatSong } from "common/js/song";
 import Scroll from "base/scroll/scroll";
-import Loading from 'base/loading/loading'
-import Singer from 'common/js/singer'
-import NoResult from 'base/no-result/no-result'
+import Loading from "base/loading/loading";
+import Singer from "common/js/singer";
+import NoResult from "base/no-result/no-result";
 
-import {mapMutations,mapActions} from 'vuex'
+import { mapMutations, mapActions } from "vuex";
 
 const TYPE_SINGER = "singer";
 const PERPAGE = 20;
@@ -52,7 +60,8 @@ export default {
       result: [],
       pullUp: true,
       hasMore: true,
-      noTitle:'暂无结果'
+      noTitle: "暂无结果",
+      beforeScroll:true
     };
   },
   watch: {
@@ -66,14 +75,14 @@ export default {
     _search() {
       this.hasMore = true;
       //将scroll组件滚动到顶部
-      this.page=1
-      this.$refs.suggest.scrollTo(0,0)
+      this.page = 1;
+      this.$refs.suggest.scrollTo(0, 0);
       search(this.query, this.page, this.showSinger, PERPAGE).then(res => {
         if (res.code === ERR_OK) {
           this.result = this._getResult(res.data);
           this._chenkMore(res.data);
         }
-      })
+      });
     },
     // 上拉加载更多数据
     searchMore() {
@@ -83,16 +92,19 @@ export default {
       this.page++;
       search(this.query, this.page, this.showSinger, PERPAGE).then(res => {
         if (res.code === ERR_OK) {
-          this.result = this.result.concat(this._getResult(res.data))
-          this._chenkMore(res.data)
+          this.result = this.result.concat(this._getResult(res.data));
+          this._chenkMore(res.data);
         }
-      })
+      });
     },
     //判断有没有更多
     _chenkMore(data) {
-      const song = data.song
-      if (!song.list.length || (song.curnum + song.curpage * PERPAGE) >= song.totalnum) {
-        this.hasMore = false
+      const song = data.song;
+      if (
+        !song.list.length ||
+        song.curnum + song.curpage * PERPAGE >= song.totalnum
+      ) {
+        this.hasMore = false;
       }
     },
     //将搜索结果中的歌手和歌曲处理成一个数组
@@ -133,30 +145,35 @@ export default {
       return ret;
     },
     //搜索列表点击事件
-    selectItem(item){
-      console.log(item)
-      if(item.type===TYPE_SINGER){
-        const singer=new Singer({
+    selectItem(item) {
+      if (item.type === TYPE_SINGER) {
+        const singer = new Singer({
           id: item.singermid,
           name: item.singername,
-          avatar:item.singermid,
-          singerId:item.singermid
-        })
+          avatar: item.singermid,
+          singerId: item.singermid
+        });
         this.$router.push({
-          path:`/search/${singer.id}`
-        })
-        this.setSinger(singer)
-      }else{
-        this.insertSong(item)
+          path: `/search/${singer.id}`
+        });
+        this.setSinger(singer);
+      } else {
+        this.insertSong(item);
       }
+      //点击之后派发一个事件，用来做保存搜索记录，因为suggest这个组件本身做的不是保存记录，只是显示列表，所以要派发出去，在
+      //别的组件去保存
+      this.$emit('select',item)
+    },
+    //接收scroll组件传过来的列表开始滚动事件
+    listScroll(){
+      //suggest组件并不需要做什么东西，应该派发到search组件去做
+      this.$emit('listScroll')
     },
 
     ...mapMutations({
-      setSinger: 'SET_SINGER'
+      setSinger: "SET_SINGER"
     }),
-    ...mapActions([
-      'insertSong'
-    ])
+    ...mapActions(["insertSong"])
   },
   components: {
     Scroll,

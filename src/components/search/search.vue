@@ -15,55 +15,78 @@
             </li>
           </ul>
         </div>
+        <div class="search-history" v-show="searchHistory.length">
+          <h1 class="title">
+            <span class="text">搜索历史</span>
+            <span class="clear">
+              <i class="icon-front icon-clear"></i>
+            </span>
+          </h1>
+        </div>
       </div>
     </div>
     <div class="search-result" v-show="query">
-      <suggest :query="query"></suggest>
+      <suggest :query="query" @listScroll="blurInput" @select="saveSearch"></suggest>
     </div>
     <router-view></router-view>
   </div>
 </template>
 <script>
 import SearchBox from "base/search-box/search-box";
-import Suggest from 'cpnts/suggest/suggest'
-import {getHotKey} from 'api/search'
-import {ERR_OK} from 'api/config'
+import Suggest from "cpnts/suggest/suggest";
+import { getHotKey } from "api/search";
+import { ERR_OK } from "api/config";
+import { mapActions, mapGetters } from "vuex";
 export default {
   components: {
     SearchBox,
     Suggest
   },
-  data(){
+  data() {
     return {
-      hotkey:[],
-      query:''
-    }
+      hotkey: [],
+      query: ""
+    };
   },
-  created(){
-    this._getHotKey()
+  created() {
+    this._getHotKey();
+    console.log(this.searchHistory)
   },
-  methods:{
-    _getHotKey(){
-      getHotKey().then((res)=>{
-        if(res.code===ERR_OK){
-          this.hotkey=res.data.hotkey.slice(0,10)
+  methods: {
+    _getHotKey() {
+      getHotKey().then(res => {
+        if (res.code === ERR_OK) {
+          this.hotkey = res.data.hotkey.slice(0, 10);
         }
-      })
+      });
     },
     //推荐点击,调用字组件的方法
-    addQuery(query){
-      console.log(query)
-      this.$refs.searchBox.setQuery(query)
+    addQuery(query) {
+      console.log(query);
+      this.$refs.searchBox.setQuery(query);
     },
-    onQueryChange(query){
-      this.query=query
-    }
+    onQueryChange(query) {
+      this.query = query;
+    },
+    //接收从suggest中传过来的让文本框失去焦点事件，并调用子组件searchBox中的失去焦点函数
+    blurInput() {
+      this.$refs.searchBox.blur();
+    },
+    //保存搜索结果
+    saveSearch() {
+      this.saveSearchHistory(this.query);
+    },
+
+    ...mapActions(["saveSearchHistory"]),
+  },
+  computed:{
+    ...mapGetters(["searchHistory"])
   }
 };
 </script>
 <style lang="scss" scoped>
-@import 'common/scss/variable.scss';
-@import 'common/scss/mixin.scss';
+@import "common/scss/variable.scss";
+@import "common/scss/mixin.scss";
 .search {
   .search-box-wrapper {
     margin: 20px;
@@ -101,7 +124,7 @@ export default {
           align-items: center;
           height: 40px;
           font-size: $font-size-medium;
-          color: $color-text-l;
+          color: #999;
           .text {
             flex: 1;
           }
@@ -109,7 +132,7 @@ export default {
             @include extend-click();
             .icon-clear {
               font-size: $font-size-medium;
-              color: $color-text-d;
+              color: #999;
             }
           }
         }

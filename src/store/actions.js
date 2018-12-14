@@ -1,10 +1,7 @@
 import * as types from './mutation-types'
-import {
-  playMode
-} from 'common/js/config'
-import {
-  shuffle
-} from 'common/js/utl'
+import { playMode } from 'common/js/config'
+import { shuffle } from 'common/js/utl'
+import { saveSearch } from 'common/js/cache'
 
 function findIndex(list, song) {
   return list.findIndex((item) => {
@@ -12,13 +9,7 @@ function findIndex(list, song) {
   })
 }
 
-export const selectPlay = function ({
-  commit,
-  state
-}, {
-  list,
-  index
-}) {
+export const selectPlay = function ({commit, state}, {list, index}) {
   commit(types.SET_SEQUENCE_LIST, list)
 
   if (state.mode === playMode.random) {
@@ -34,11 +25,7 @@ export const selectPlay = function ({
   commit(types.SET_PLAYING_STATE, true)
 }
 
-export const randomPlay = function ({
-  commit
-}, {
-  list
-}) {
+export const randomPlay = function ({ commit }, { list }) {
   commit(types.SET_PLAY_MODE, playMode.random)
   commit(types.SET_SEQUENCE_LIST, list)
   let randomlist = shuffle(list)
@@ -48,6 +35,8 @@ export const randomPlay = function ({
   commit(types.SET_PLAYING_STATE, true)
 }
 
+
+//搜索结果，点击插入歌曲
 export const insertSong = function ({commit, state}, song) {
   let playlist = state.playlist.slice()
   let sequenceList = state.sequenceList.slice()
@@ -90,4 +79,9 @@ export const insertSong = function ({commit, state}, song) {
   commit(types.SET_CURRENT_INDEX,currentIndex)
   commit(types.SET_FULL_SCREEN, true)
   commit(types.SET_PLAYING_STATE, true)
+}
+
+//搜索结果，点击保存vuex并将数据保存到本地缓存
+export const saveSearchHistory = function({commit},query){
+  commit(types.SET_SEARCH_HISTORY, saveSearch(query))
 }

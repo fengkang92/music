@@ -3,14 +3,14 @@
 <template>
   <div class="search-box">
     <i class="iconfont icon-search"></i>
-    <input class="box" v-model="query" type="text" :placeholder="placeholder">
+    <input ref="input" class="box" v-model="query" type="text" :placeholder="placeholder">
     <i v-show="query" @click="clear" class="icon-dismiss"></i>  
   </div>  
 </template>
 
 
 <script>
-
+import {debounce} from 'common/js/utl'
 export default {
   props:{
     placeholder:{
@@ -31,12 +31,16 @@ export default {
     setQuery(query){
       console.log(query)
       this.query=query
+    },
+    //当列表滚动时，文本框失去焦点，收起键盘
+    blur(){
+      this.$refs.input.blur()
     }
   },
   created(){
-    this.$watch('query',(newQuery)=>{
+    this.$watch('query',debounce((newQuery)=>{
       this.$emit('query',newQuery)
-    })
+    },200))
   }
 }
 </script>
@@ -63,7 +67,7 @@ export default {
   .box {
     flex: 1;
     margin: 0 5px;
-    line-height: 18px;
+    line-height: 30px;
     background: $color-highlight-background;
     color: $color-text;
     font-size: $font-size-medium;
